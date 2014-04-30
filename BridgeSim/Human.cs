@@ -75,7 +75,7 @@ namespace Masa.BridgeSim
 		public override void Draw(GameTime gameTime)
 		{
 			base.Draw(gameTime);
-			var box = Game.Components.OfType<BoxRenderer>().First();
+			var box = Game.GetComponent<BoxRenderer>();
 			box.Begin();
 			foreach (var item in EnumrateNode())
 			{
@@ -94,15 +94,6 @@ namespace Masa.BridgeSim
 		{
 			get
 			{
-				//var trans = Matrix.CreateScale(Scale) * Matrix.CreateTranslation(Position);
-				//if (Parent == null)
-				//{
-				//	return trans;
-				//}
-				//else
-				//{
-				//	return Matrix.CreateTranslation(Parent.Position) * trans;
-				//}
 				return Matrix.CreateScale(Scale) * AbsolutePosition;
 			}
 		}

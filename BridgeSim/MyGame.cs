@@ -30,6 +30,7 @@ namespace Masa.BridgeSim
 			CreateHuman();
 			Components.Add(new Camera(this));
 			Components.Add(new BoxRenderer(this));
+			Components.Add(new World(this));
 		}
 
 		void dev_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
@@ -57,7 +58,7 @@ namespace Masa.BridgeSim
 			base.Update(gameTime);
 			if (Keyboard.GetState().IsKeyDown(Keys.Escape))
 			{
-				Components.Remove(Components.OfType<Human>().First());
+				Components.Remove(this.GetComponent<Human>());
 				CreateHuman();
 			}
 		}

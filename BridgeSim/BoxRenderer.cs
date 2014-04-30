@@ -57,7 +57,7 @@ namespace Masa.BridgeSim
 		public override void Update(GameTime gameTime)
 		{
 			base.Update(gameTime);
-			var camera = Game.Components.OfType<Camera>().First();
+			var camera = Game.GetComponent<Camera>();
 			effect.Parameters["Projection"].SetValue(camera.GetProjection(Game));
 			effect.Parameters["View"].SetValue(camera.View);
 			effect.Parameters["DiffuseDir"].SetValue(Vector3.Normalize(Vector3.One));
@@ -80,5 +80,6 @@ namespace Masa.BridgeSim
 			GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vertex.VertexCount, 0, index.IndexCount / 3);
 			
 		}
+
 	}
 }
