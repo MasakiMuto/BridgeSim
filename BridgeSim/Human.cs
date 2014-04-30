@@ -11,7 +11,7 @@ namespace Masa.BridgeSim
 {
 	public class Human : DrawableGameComponent
 	{
-		BasicEffect effect;
+		Effect myeffect;
 		VertexBuffer vertex;
 		IndexBuffer index;
 
@@ -22,26 +22,25 @@ namespace Masa.BridgeSim
 
 		void CreateParts()
 		{
-			Root = new HumanNode()
+			Root = new HumanNode(new Vector3(0, 0, 1))
 			{
 				Position = Vector3.Zero,
 				Scale = new Vector3(1, 3, .5f),
-
 			};
-			Head = new HumanNode()
+			Head = new HumanNode(new Vector3(1, 0, 0))
 			{
-				Position = new Vector3(0, 3, 0),
-				Scale = new Vector3(.7f, 1, 0.5f)
+				Position = new Vector3(0, 4f, 0),
+				Scale = new Vector3(.7f, 1f, 0.5f)
 			};
-			LeftArm = new HumanNode()
+			LeftArm = new HumanNode(new Vector3(0, 1, 0))
 			{
-				Position = new Vector3(2, 1.2f, 0),
+				Position = new Vector3(3.5f, 1.2f, 0),
 				Scale = new Vector3(2.5f, .3f, .3f)
 			};
-			LeftLeg = new HumanNode()
+			LeftLeg = new HumanNode(new Vector3(1, 1, 0))
 			{
-				Position = new Vector3(.5f, 5, 0),
-				Scale = new Vector3(.5f, 4f, .5f)
+				Position = new Vector3(.5f, -6f, 0),
+				Scale = new Vector3(.3f, 3f, .5f)
 			};
 
 			Root.AppendChild(Head);
@@ -49,7 +48,6 @@ namespace Masa.BridgeSim
 			Root.AppendChild(LeftLeg);
 			RightArm = LeftArm.Mirror();
 			RightLeg = LeftLeg.Mirror();
-
 		}
 
 		IEnumerable<HumanNode> EnumrateNode()
@@ -66,7 +64,6 @@ namespace Masa.BridgeSim
 
 		void InitRender()
 		{
-			effect = new BasicEffect(GraphicsDevice);
 			vertex = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), 8, BufferUsage.WriteOnly);
 			index = new IndexBuffer(GraphicsDevice, IndexElementSize.SixteenBits, 6 * 3 * 2, BufferUsage.WriteOnly);
 			vertex.SetData(new[]{
@@ -85,20 +82,19 @@ namespace Masa.BridgeSim
 				0, 2, 1,
 				2, 3, 1,
 				5, 6, 4,
-				6, 7, 5,
+				5, 7, 6,
 				2, 6, 7,
 				7, 3, 2,
 				5, 4, 0,
 				0, 1, 5,
 				0, 4, 6,
 				6, 2, 0,
-				7, 1, 5,
+				5, 1, 7,
 				1, 3, 7
 			});
-			effect.TextureEnabled = false;
-			//effect.EnableDefaultLighting();
-			effect.View = Matrix.CreateLookAt(new Vector3(10, 10, 10), new Vector3(), Vector3.Up);
-			effect.Projection = Matrix.CreatePerspectiveFieldOfView(.8f, GraphicsDevice.Viewport.AspectRatio, .1f, 100);
+			myeffect = new Effect(GraphicsDevice, System.IO.File.ReadAllBytes("effect.bin"));
+			myeffect.Parameters["View"].SetValue(Matrix.CreateLookAt(new Vector3(10, 10, 10), new Vector3(), Vector3.Up));
+			myeffect.Parameters["Projection"].SetValue(Matrix.CreatePerspectiveFieldOfView(.8f, GraphicsDevice.Viewport.AspectRatio, .1f, 100));
 		}
 
 		protected override void LoadContent()
@@ -118,17 +114,18 @@ namespace Masa.BridgeSim
 		public override void Draw(GameTime gameTime)
 		{
 			base.Draw(gameTime);
-			GraphicsDevice.RasterizerState = RasterizerState.CullNone;
+			GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
+			GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 			GraphicsDevice.SetVertexBuffer(vertex);
 			GraphicsDevice.Indices = index;
+			
 			foreach (var item in EnumrateNode())
 			{
-				effect.World = item.Transform;
-				effect.CurrentTechnique.Passes[0].Apply();
+				myeffect.Parameters["Diffuse"].SetValue(item.Diffuse);
+				myeffect.Parameters["World"].SetValue(item.Transform);
+				myeffect.CurrentTechnique.Passes[0].Apply();
 				GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vertex.VertexCount, 0, index.IndexCount / 3);
 			}
-			
-			
 		}
 	}
 
@@ -136,19 +133,37 @@ namespace Masa.BridgeSim
 	{
 		public Vector3 Position;//親からの相対座標
 		public Vector3 Scale;
+		public Vector3 Diffuse;
 
 		public Matrix Transform
 		{
 			get
 			{
-				var trans = Matrix.CreateScale(Scale) * Matrix.CreateTranslation(Position);
+				//var trans = Matrix.CreateScale(Scale) * Matrix.CreateTranslation(Position);
+				//if (Parent == null)
+				//{
+				//	return trans;
+				//}
+				//else
+				//{
+				//	return Matrix.CreateTranslation(Parent.Position) * trans;
+				//}
+				return Matrix.CreateScale(Scale) * AbsolutePosition;
+			}
+		}
+
+		Matrix AbsolutePosition
+		{
+			get
+			{
+				var trans = Matrix.CreateTranslation(Position);
 				if (Parent == null)
 				{
 					return trans;
 				}
 				else
 				{
-					return Parent.Transform * trans;
+					return Parent.AbsolutePosition * trans;
 				}
 			}
 		}
@@ -156,14 +171,15 @@ namespace Masa.BridgeSim
 		public HumanNode Parent;
 		public List<HumanNode> Children;
 
-		public HumanNode()
+		public HumanNode(Vector3 diffuse)
 		{
 			Children = new List<HumanNode>();
+			Diffuse = diffuse;
 		}
 
 		public HumanNode Mirror()
 		{
-			var mirror = new HumanNode()
+			var mirror = new HumanNode(Diffuse)
 			{
 				Scale = this.Scale,
 				Position = new Vector3(-this.Position.X, this.Position.Y, this.Position.Z)

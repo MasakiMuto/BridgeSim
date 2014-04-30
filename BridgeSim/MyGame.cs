@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace Masa.BridgeSim
 {
@@ -19,12 +19,13 @@ namespace Masa.BridgeSim
 			Game = this;
 			dev = new GraphicsDeviceManager(this)
 			{
+				GraphicsProfile = Microsoft.Xna.Framework.Graphics.GraphicsProfile.HiDef,
 				PreferredBackBufferHeight = 600,
 				PreferredBackBufferWidth = 800,
 				PreferredBackBufferFormat = SurfaceFormat.Color,
 			};
 			dev.PreparingDeviceSettings += dev_PreparingDeviceSettings;
-			this.Components.Add(new Human(this));
+			CreateHuman();
 		}
 
 		void dev_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
@@ -42,14 +43,24 @@ namespace Masa.BridgeSim
 			base.Initialize();
 		}
 
+		void CreateHuman()
+		{
+			Components.Add(new Human(this));
+		}
+
 		protected override void Update(GameTime gameTime)
 		{
 			base.Update(gameTime);
+			if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+			{
+				Components.RemoveAt(0);
+				CreateHuman();
+			}
 		}
 
 		protected override void Draw(GameTime gameTime)
 		{
-			GraphicsDevice.Clear(Color.CornflowerBlue);
+			GraphicsDevice.Clear(ClearOptions.DepthBuffer | ClearOptions.Target, Color.CornflowerBlue, 1, 0);
 			base.Draw(gameTime);
 			
 		}
