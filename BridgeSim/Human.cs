@@ -64,7 +64,7 @@ namespace Masa.BridgeSim
 
 		void InitRender()
 		{
-			vertex = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), 8, BufferUsage.WriteOnly);
+			vertex = new VertexBuffer(GraphicsDevice, typeof(MyVertex), 8, BufferUsage.WriteOnly);
 			index = new IndexBuffer(GraphicsDevice, IndexElementSize.SixteenBits, 6 * 3 * 2, BufferUsage.WriteOnly);
 			vertex.SetData(new[]{
 				new Vector3(-1, -1, -1),
@@ -75,7 +75,7 @@ namespace Masa.BridgeSim
 				new Vector3(1, -1, 1),
 				new Vector3(1, 1, -1),
 				new Vector3(1, 1, 1)
-			}.Select(x => new VertexPositionColor(x, Color.Green))
+			}.Select(x => new MyVertex(x, x))
 			.ToArray()
 			);
 			index.SetData<short>(new short[]{
@@ -95,6 +95,7 @@ namespace Masa.BridgeSim
 			myeffect = new Effect(GraphicsDevice, System.IO.File.ReadAllBytes("effect.bin"));
 			myeffect.Parameters["View"].SetValue(Matrix.CreateLookAt(new Vector3(10, 10, 10), new Vector3(), Vector3.Up));
 			myeffect.Parameters["Projection"].SetValue(Matrix.CreatePerspectiveFieldOfView(.8f, GraphicsDevice.Viewport.AspectRatio, .1f, 100));
+			myeffect.Parameters["DiffuseDir"].SetValue(Vector3.Normalize(Vector3.One));
 		}
 
 		protected override void LoadContent()
@@ -118,7 +119,7 @@ namespace Masa.BridgeSim
 			GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 			GraphicsDevice.SetVertexBuffer(vertex);
 			GraphicsDevice.Indices = index;
-			
+			myeffect.Parameters["View"].SetValue(Game.Components.OfType<Camera>().Single().View);
 			foreach (var item in EnumrateNode())
 			{
 				myeffect.Parameters["Diffuse"].SetValue(item.Diffuse);

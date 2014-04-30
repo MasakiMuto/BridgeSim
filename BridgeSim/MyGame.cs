@@ -23,9 +23,11 @@ namespace Masa.BridgeSim
 				PreferredBackBufferHeight = 600,
 				PreferredBackBufferWidth = 800,
 				PreferredBackBufferFormat = SurfaceFormat.Color,
+				PreferMultiSampling = true,
 			};
 			dev.PreparingDeviceSettings += dev_PreparingDeviceSettings;
 			CreateHuman();
+			Components.Add(new Camera(this));
 		}
 
 		void dev_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
