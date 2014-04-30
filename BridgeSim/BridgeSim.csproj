@@ -60,6 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoxRenderer.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Human.cs" />
     <Compile Include="MyGame.cs" />

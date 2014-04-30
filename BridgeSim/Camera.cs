@@ -17,6 +17,12 @@ namespace Masa.BridgeSim
 				return Matrix.CreateLookAt(Position, TargetPosition, Upper);
 			}
 		}
+
+		public Matrix GetProjection(Game game)
+		{
+			return Matrix.CreatePerspectiveFieldOfView(.8f, game.GraphicsDevice.Viewport.AspectRatio, .1f, 100);
+		}
+
 		Vector3 Position, TargetPosition, Upper;
 		readonly Vector3 BasePosition;
 		readonly Vector3 Axis;

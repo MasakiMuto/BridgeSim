@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -28,6 +29,7 @@ namespace Masa.BridgeSim
 			dev.PreparingDeviceSettings += dev_PreparingDeviceSettings;
 			CreateHuman();
 			Components.Add(new Camera(this));
+			Components.Add(new BoxRenderer(this));
 		}
 
 		void dev_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
@@ -55,7 +57,7 @@ namespace Masa.BridgeSim
 			base.Update(gameTime);
 			if (Keyboard.GetState().IsKeyDown(Keys.Escape))
 			{
-				Components.RemoveAt(0);
+				Components.Remove(Components.OfType<Human>().First());
 				CreateHuman();
 			}
 		}

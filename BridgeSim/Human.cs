@@ -11,10 +11,6 @@ namespace Masa.BridgeSim
 {
 	public class Human : DrawableGameComponent
 	{
-		Effect myeffect;
-		VertexBuffer vertex;
-		IndexBuffer index;
-
 		HumanNode Root;
 		HumanNode Head;
 		HumanNode LeftArm, RightArm;
@@ -62,46 +58,11 @@ namespace Masa.BridgeSim
 			};
 		}
 
-		void InitRender()
-		{
-			vertex = new VertexBuffer(GraphicsDevice, typeof(MyVertex), 8, BufferUsage.WriteOnly);
-			index = new IndexBuffer(GraphicsDevice, IndexElementSize.SixteenBits, 6 * 3 * 2, BufferUsage.WriteOnly);
-			vertex.SetData(new[]{
-				new Vector3(-1, -1, -1),
-				new Vector3(-1, -1, 1),
-				new Vector3(-1, 1, -1),
-				new Vector3(-1, 1, 1),
-				new Vector3(1, -1, -1),
-				new Vector3(1, -1, 1),
-				new Vector3(1, 1, -1),
-				new Vector3(1, 1, 1)
-			}.Select(x => new MyVertex(x, x))
-			.ToArray()
-			);
-			index.SetData<short>(new short[]{
-				0, 2, 1,
-				2, 3, 1,
-				5, 6, 4,
-				5, 7, 6,
-				2, 6, 7,
-				7, 3, 2,
-				5, 4, 0,
-				0, 1, 5,
-				0, 4, 6,
-				6, 2, 0,
-				5, 1, 7,
-				1, 3, 7
-			});
-			myeffect = new Effect(GraphicsDevice, System.IO.File.ReadAllBytes("effect.bin"));
-			myeffect.Parameters["View"].SetValue(Matrix.CreateLookAt(new Vector3(10, 10, 10), new Vector3(), Vector3.Up));
-			myeffect.Parameters["Projection"].SetValue(Matrix.CreatePerspectiveFieldOfView(.8f, GraphicsDevice.Viewport.AspectRatio, .1f, 100));
-			myeffect.Parameters["DiffuseDir"].SetValue(Vector3.Normalize(Vector3.One));
-		}
+		
 
 		protected override void LoadContent()
 		{
 			base.LoadContent();
-			InitRender();
 		}
 
 		public Human(Game game)
@@ -111,21 +72,14 @@ namespace Masa.BridgeSim
 		}
 
 		
-
 		public override void Draw(GameTime gameTime)
 		{
 			base.Draw(gameTime);
-			GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
-			GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-			GraphicsDevice.SetVertexBuffer(vertex);
-			GraphicsDevice.Indices = index;
-			myeffect.Parameters["View"].SetValue(Game.Components.OfType<Camera>().Single().View);
+			var box = Game.Components.OfType<BoxRenderer>().First();
+			box.Begin();
 			foreach (var item in EnumrateNode())
 			{
-				myeffect.Parameters["Diffuse"].SetValue(item.Diffuse);
-				myeffect.Parameters["World"].SetValue(item.Transform);
-				myeffect.CurrentTechnique.Passes[0].Apply();
-				GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vertex.VertexCount, 0, index.IndexCount / 3);
+				box.DrawBox(item.Diffuse, item.Transform);
 			}
 		}
 	}
