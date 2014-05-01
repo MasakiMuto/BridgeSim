@@ -71,6 +71,11 @@ namespace Masa.BridgeSim
 			CreateParts();
 		}
 
+		public override void Update(GameTime gameTime)
+		{
+			base.Update(gameTime);
+			LeftArm.Rotation = new Vector3(0, 0, (float)gameTime.TotalGameTime.TotalSeconds);
+		}
 		
 		public override void Draw(GameTime gameTime)
 		{
@@ -89,6 +94,7 @@ namespace Masa.BridgeSim
 		public Vector3 Position;//親からの相対座標
 		public Vector3 Scale;
 		public Vector3 Diffuse;
+		public Vector3 Rotation;//Yaw, Pitch, Roll
 
 		public Matrix Transform
 		{
@@ -102,7 +108,7 @@ namespace Masa.BridgeSim
 		{
 			get
 			{
-				var trans = Matrix.CreateTranslation(Position);
+				var trans = Matrix.CreateFromYawPitchRoll(Rotation.X, Rotation.Y, Rotation.Z) * Matrix.CreateTranslation(Position);
 				if (Parent == null)
 				{
 					return trans;
