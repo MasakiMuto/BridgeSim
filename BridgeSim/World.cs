@@ -22,7 +22,7 @@ namespace Masa.BridgeSim
 			var box = Game.GetComponent<BoxRenderer>();
 			box.Begin();
 			GraphicsDevice.RasterizerState = RasterizerState.CullClockwise;
-			box.DrawBox(new Vector3(.5f, .5f, .5f), Matrix.CreateScale(10));
+			box.DrawBox(Color.Gray, Matrix.CreateScale(10));
 		}
 	}
 }

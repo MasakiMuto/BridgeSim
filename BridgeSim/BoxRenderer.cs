@@ -14,6 +14,8 @@ namespace Masa.BridgeSim
 		VertexBuffer vertex;
 		IndexBuffer index;
 
+		RasterizerState wire;
+
 		public BoxRenderer(Game game)
 			: base(game)
 		{
@@ -52,6 +54,12 @@ namespace Masa.BridgeSim
 				5, 1, 7,
 				1, 3, 7
 			});
+
+			wire = new RasterizerState()
+			{
+				CullMode = CullMode.CullCounterClockwiseFace,
+				FillMode = FillMode.WireFrame
+			};
 		}
 
 		public override void Update(GameTime gameTime)
@@ -66,15 +74,16 @@ namespace Masa.BridgeSim
 		public void Begin()
 		{
 			GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
+			GraphicsDevice.RasterizerState = wire;
 			GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 			GraphicsDevice.SetVertexBuffer(vertex);
 			GraphicsDevice.Indices = index;
 		
 		}
 
-		public void DrawBox(Vector3 diffuse, Matrix world)
+		public void DrawBox(Color diffuse, Matrix world)
 		{
-			effect.Parameters["Diffuse"].SetValue(diffuse);
+			effect.Parameters["Diffuse"].SetValue(diffuse.ToVector3());
 			effect.Parameters["World"].SetValue(world);
 			effect.CurrentTechnique.Passes[0].Apply();
 			GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vertex.VertexCount, 0, index.IndexCount / 3);

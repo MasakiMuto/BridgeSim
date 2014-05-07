@@ -63,6 +63,7 @@
     <Compile Include="BoxRenderer.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Human.cs" />
+    <Compile Include="Joint.cs" />
     <Compile Include="MyGame.cs" />
     <Compile Include="MyVertex.cs" />
     <Compile Include="Program.cs" />
