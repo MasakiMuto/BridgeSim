@@ -50,7 +50,7 @@ namespace Masa.BridgeSim
 
 		void CreateHuman()
 		{
-			Components.Add(new Human(this));
+			Components.Add(new JointHuman(this));
 		}
 
 		protected override void Update(GameTime gameTime)

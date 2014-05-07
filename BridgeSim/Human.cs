@@ -74,7 +74,7 @@ namespace Masa.BridgeSim
 		public override void Update(GameTime gameTime)
 		{
 			base.Update(gameTime);
-			LeftArm.Rotation = new Vector3(0, 0, (float)gameTime.TotalGameTime.TotalSeconds);
+			//LeftArm.Rotation = new Vector3(0, 0, (float)gameTime.TotalGameTime.TotalSeconds);
 		}
 		
 		public override void Draw(GameTime gameTime)
@@ -91,11 +91,7 @@ namespace Masa.BridgeSim
 
 	public class HumanNode
 	{
-		public Vector3 Position;//親からの相対座標
-		public Vector3 Scale;
-		public Vector3 Diffuse;
-		public Vector3 Rotation;//Yaw, Pitch, Roll
-
+		
 		public Matrix Transform
 		{
 			get
@@ -123,15 +119,21 @@ namespace Masa.BridgeSim
 		public HumanNode Parent;
 		public List<HumanNode> Children;
 
+		public Vector3 Position;//親からの関節相対座標
+		public Vector3 Scale;
+		public Color Diffuse;
+		public Vector3 Rotation;//Yaw, Pitch, Roll
+
+
 		public HumanNode(Vector3 diffuse)
 		{
 			Children = new List<HumanNode>();
-			Diffuse = diffuse;
+			Diffuse = new Color(diffuse);
 		}
 
 		public HumanNode Mirror()
 		{
-			var mirror = new HumanNode(Diffuse)
+			var mirror = new HumanNode(Diffuse.ToVector3())
 			{
 				Scale = this.Scale,
 				Position = new Vector3(-this.Position.X, this.Position.Y, this.Position.Z)
