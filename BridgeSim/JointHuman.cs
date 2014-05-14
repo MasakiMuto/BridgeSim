@@ -31,14 +31,23 @@ namespace Masa.BridgeSim
 
 	public class JointHuman : DrawableGameComponent
 	{
+		public static JointHuman Human { get; private set; }
+
 		Joint root;
 		Joint[] allJoint;
-		
+		public Vector3 Translate { get; private set; }
 
 		public JointHuman(Game game)
 			: base(game)
 		{
-		
+			Human = this;
+			CreateNodes();
+			allJoint = root.AllChildren().ToArray();
+			SetBind();
+		}
+
+		void CreateNodes()
+		{
 			root = new Joint(Position.Center, Part.Root, 1, new Vector2(2, 4), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(0), new ValueWithRange(0))
 			{
 				Color = Color.Red
@@ -71,10 +80,14 @@ namespace Masa.BridgeSim
 			root.AddChild(leftLeg);
 			root.AddChild(leftLeg.Mirror());
 
-
 			root.AddChild(new Joint(Position.Center, Part.Head, 1, new Vector2(.5f, .5f), new Vector3(0, 2, 0), new ValueWithRange(0), new ValueWithRange(-MathHelper.PiOver2, -MathHelper.PiOver2 * 3, 0), new ValueWithRange(0)) { Color = Color.Purple });
+		}
 
-			allJoint = root.AllChildren().ToArray();
+		void SetBind()
+		{
+			var left = GetPart(Position.Left, Part.Tsumasaki);
+			var right = GetPart(Position.Right, Part.Tsumasaki);
+			Translate = new Vector3(0, -left.GetAbsolutePosition().Y, 0);
 		}
 
 		Joint GetPart(Position pos, Part part)

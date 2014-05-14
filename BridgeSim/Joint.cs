@@ -26,6 +26,8 @@ namespace Masa.BridgeSim
 		public Part Name { get; private set; }
 		public Position Position { get; private set; }
 
+		public float Mass { get; set; }
+
 		public Joint(Position pos, Part name, float length, Vector2 size, Vector3 parentOffset, ValueWithRange yaw, ValueWithRange pitch, ValueWithRange roll)
 			: this()
 		{
@@ -39,6 +41,7 @@ namespace Masa.BridgeSim
 			Color = Color.CornflowerBlue;
 			ParentOffset = parentOffset;
 			Visible = true;
+			Mass = length * size.X * size.Y;
 		}
 
 		public Joint()
@@ -75,11 +78,11 @@ namespace Masa.BridgeSim
 		/// 関節自体の位置
 		/// </summary>
 		/// <returns></returns>
-		Vector3 GetAbsolutePosition()
+		public Vector3 GetAbsolutePosition()
 		{
 			if (Parent == null)
 			{
-				return Vector3.Zero;
+				return JointHuman.Human.Translate;
 			}
 			else
 			{

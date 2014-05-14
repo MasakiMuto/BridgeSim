@@ -13,6 +13,7 @@ namespace Masa.BridgeSim
 		VertexBuffer vertex;
 		IndexBuffer index;
 		BasicEffect effect;
+		public static readonly float Gravity = 9.8f;
 
 		public World(Game game)
 			: base(game)
