@@ -74,7 +74,7 @@ namespace Masa.BridgeSim
 		public void Begin()
 		{
 			GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
-			GraphicsDevice.RasterizerState = wire;
+			//GraphicsDevice.RasterizerState = wire;
 			GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 			GraphicsDevice.SetVertexBuffer(vertex);
 			GraphicsDevice.Indices = index;

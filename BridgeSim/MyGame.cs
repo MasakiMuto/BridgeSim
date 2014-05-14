@@ -60,7 +60,7 @@ namespace Masa.BridgeSim
 			base.Update(gameTime);
 			if (Keyboard.GetState().IsKeyDown(Keys.Escape))
 			{
-				Components.Remove(this.GetComponent<Human>());
+				Components.Remove(this.GetComponent<JointHuman>());
 				CreateHuman();
 			}
 		}
