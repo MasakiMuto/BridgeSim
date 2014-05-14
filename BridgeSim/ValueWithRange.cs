@@ -50,5 +50,10 @@ namespace Masa.BridgeSim
 			elm.SetAttributeValue("min", Min);
 			return elm;
 		}
+
+		public override string ToString()
+		{
+			return String.Format("{0} < {1} < {2}", Min, Value, Max);
+		}
 	}
 }

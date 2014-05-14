@@ -23,10 +23,14 @@ namespace Masa.BridgeSim
 		Vector3 ParentOffset;
 		public bool Visible { get; set; }
 
+		public Part Name { get; private set; }
+		public Position Position { get; private set; }
 
-		public Joint(float length, Vector2 size, Vector3 parentOffset, ValueWithRange yaw, ValueWithRange pitch, ValueWithRange roll)
+		public Joint(Position pos, Part name, float length, Vector2 size, Vector3 parentOffset, ValueWithRange yaw, ValueWithRange pitch, ValueWithRange roll)
 			: this()
 		{
+			Position = pos;
+			Name = name;
 			Length = length;
 			Size = size;
 			Yaw = yaw;
@@ -49,7 +53,23 @@ namespace Masa.BridgeSim
 			return this;
 		}
 
-	
+		/// <summary>
+		/// 自分を含む子孫全て
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<Joint> AllChildren()
+		{
+			yield return this;
+			foreach (var item in Children.SelectMany(x=>x.AllChildren()))
+			{
+				yield return item;
+			}
+		}
+
+		public override string ToString()
+		{
+			return Position.ToString() + Name.ToString() + " " + base.ToString();
+		}
 
 		/// <summary>
 		/// 関節自体の位置
@@ -108,7 +128,20 @@ namespace Masa.BridgeSim
 
 		Joint MirrorSingle()
 		{
-			return new Joint(Length, Size, new Vector3(-ParentOffset.X, ParentOffset.Y, ParentOffset.Z), Yaw.Mirror(), Pitch, Roll.Mirror())
+			Position mp = BridgeSim.Position.Center;
+			switch (Position)
+			{
+				case Position.Center:
+					mp = BridgeSim.Position.Center;
+					break;
+				case Position.Left:
+					mp = BridgeSim.Position.Right;
+					break;
+				case Position.Right:
+					mp = BridgeSim.Position.Left;
+					break;
+			}
+			return new Joint(mp, Name, Length, Size, new Vector3(-ParentOffset.X, ParentOffset.Y, ParentOffset.Z), Yaw.Mirror(), Pitch, Roll.Mirror())
 			{
 				Color = this.Color,
 				Visible = this.Visible
