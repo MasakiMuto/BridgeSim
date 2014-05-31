@@ -15,7 +15,9 @@ namespace Masa.BridgeSim
 		Joint Parent;
 		List<Joint> Children;
 
-		ValueWithRange Yaw, Pitch, Roll;
+		public ValueWithRange Yaw{get; private set;}
+		public ValueWithRange Pitch{get; private set;}
+		public ValueWithRange Roll { get; private set; }
 
 		float Length;//親と自分との距離
 		Vector2 Size;//肉の大きさ
@@ -42,6 +44,11 @@ namespace Masa.BridgeSim
 			ParentOffset = parentOffset;
 			Visible = true;
 			Mass = length * size.X * size.Y;
+		}
+
+		public override int GetHashCode()
+		{
+			return (int)Position * (int)Name;
 		}
 
 		public Joint()

@@ -98,7 +98,8 @@ namespace Masa.BridgeSim
 		public override void Update(GameTime gameTime)
 		{
 			base.Update(gameTime);
-			
+			var part = GetPart(Position.Left, Part.Kata);
+			part.Yaw.Value = (float)(gameTime.TotalGameTime.TotalSeconds * 1.5f);
 		}
 
 		public void SaveToXml(string name)
