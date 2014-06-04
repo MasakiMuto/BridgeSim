@@ -85,8 +85,8 @@ namespace Masa.BridgeSim
 		{
 			anime = new KeyFrameAnime();
 			var pos = new PartId(Part.Hiji, Position.Left);
-			anime.AddFrame(new KeyFrameAnime.Frame(3, pos, new RotationState(0, 0, 0)));
-			//anime.AddFrame(new KeyFrameAnime.Frame(5, pos, new RotationState(0, -MathHelper.PiOver2, 0)));
+			anime.AddFrameWithMirror(new KeyFrameAnime.Frame(3, pos, new RotationState(0, 0, 0)));
+			anime.AddFrameWithMirror(new KeyFrameAnime.Frame(5, pos, new RotationState(0, -MathHelper.PiOver2, 0)));
 			anime.Setup();
 
 		}

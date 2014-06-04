@@ -79,6 +79,12 @@ namespace Masa.BridgeSim
 			frames.Add(f);
 		}
 
+		public void AddFrameWithMirror(Frame f)
+		{
+			frames.Add(f);
+			frames.Add(f.Mirror());
+		}
+
 		IEnumerable<Frame> CreateInitial()
 		{
 			return new Dictionary<PartId, RotationState>
