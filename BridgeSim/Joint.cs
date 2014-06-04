@@ -178,7 +178,7 @@ namespace Masa.BridgeSim
 					mp = BridgeSim.Position.Left;
 					break;
 			}
-			return new Joint(mp, Name, Length, Size, new Vector3(-ParentOffset.X, ParentOffset.Y, ParentOffset.Z), Yaw.Mirror(), Pitch, Roll.Mirror())
+			return new Joint(mp, Name, Length, Size, new Vector3(-ParentOffset.X, ParentOffset.Y, ParentOffset.Z), Yaw.Mirror(), Pitch.Clone(), Roll.Mirror())
 			{
 				Color = this.Color,
 				Visible = this.Visible

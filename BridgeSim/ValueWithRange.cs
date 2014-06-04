@@ -47,6 +47,11 @@ namespace Masa.BridgeSim
 			return new ValueWithRange(-Value, -Max, -Min);
 		}
 
+		public ValueWithRange Clone()
+		{
+			return new ValueWithRange(Value, Min, Max);
+		}
+
 		public XElement ToXml(string name)
 		{
 			var elm = new XElement(name);
