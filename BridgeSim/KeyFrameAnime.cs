@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,102 +10,136 @@ namespace Masa.BridgeSim
 {
 	public class KeyFrameAnime
 	{
-		struct PartId
-		{
-			public readonly Part Part;
-			public readonly Position Position;
-
-			public PartId(Part part, Position position)
-			{
-				Part = part;
-				Position = position;
-			}
-		}
-
-		struct State
-		{
-			public readonly float Yaw, Pitch, Roll;
-
-			public State(float yaw, float pitch, float roll)
-			{
-				Yaw = yaw;
-				Pitch = pitch;
-				Roll = roll;
-			}
-		}
-
 		public class Frame
 		{
-			public readonly float Time;//時刻
-			public Dictionary<PartId, State> Values { get; private set; }
+			public readonly double Time;//時刻
+			public readonly PartId Part;
+			public readonly RotationState State;
 
-			public Frame(float time, Dictionary<PartId, State> values)
+			public Frame(double time, PartId part, RotationState state)
 			{
 				Time = time;
-				Values = values;
+				Part = part;
+				State = state;
 			}
 
-			public void Mirror()
+			public Frame Mirror()
 			{
-				var mirror = new Dictionary<PartId, State>();
-				foreach (var item in Values.Where(x=>x.Key.Position == Position.Left))
+				if (Part.Position == Position.Center)
 				{
-					mirror.Add(new PartId(item.Key.Part, Position.Right), new State(-item.Value.Yaw, item.Value.Pitch, -item.Value.Roll));
+					throw new ArgumentException();
 				}
-				foreach (var item in mirror)
-				{
-					Values.Add(item.Key, item.Value);
-				}
+				var p = Part.Position == Position.Left ? Position.Right : Position.Left;
+				return new Frame(this.Time, new PartId(Part.Part, p), State.Mirror());
+				
 			}
 
-			public Frame Clone()
+			public static Frame Lerp(Frame last, Frame next, double time)
 			{
-				return new Frame(Time, Values.ToDictionary(x=>x.Key, x=>x.Value));
+				Debug.Assert(last.Part == next.Part);
+				Debug.Assert(last.Time <= time && time <= next.Time);
+				var ratio = (time - last.Time) / (next.Time - last.Time);
+				if (double.IsInfinity(next.Time))
+				{
+					ratio = 0;
+				}
+				return new Frame(time, last.Part, last.State.Lerp(next.State, (float)ratio));
+			}
+
+			public Frame CreateFinalFrame()
+			{
+				return new Frame(double.PositiveInfinity, Part, State);
+			}
+
+		}
+
+		struct JointState
+		{
+			public readonly Frame Last, Next;
+			public JointState(Frame last, Frame next)
+			{
+				Last = last;
+				Next = next;
 			}
 		}
 
 		List<Frame> frames;
+		Dictionary<PartId, JointState> states;
+		Frame[] initials;
 
 		public KeyFrameAnime()
 		{
 			frames = new List<Frame>();
-			frames.Add(CreateInitial());
-			frames.Add(new Frame(3, new Dictionary<PartId, State>() {{ new PartId(Part.Hiji, Position.Left), new State(-MathHelper.Pi, 0, 0)} }));
+			initials = CreateInitial().ToArray();
+			frames.AddRange(initials);
 		}
 
-		Frame CreateInitial()
+		public void AddFrame(Frame f)
 		{
-			var frame = new Frame(0, new Dictionary<PartId, State>() 
+			frames.Add(f);
+		}
+
+		IEnumerable<Frame> CreateInitial()
+		{
+			return new Dictionary<PartId, RotationState>
 			{
-				{new PartId(Part.Root, Position.Center), new State(0, 0, 0)},
-				{new PartId(Part.Head, Position.Center), new State(0, MathHelper.PiOver2, 0)},
-				{new PartId(Part.Kata, Position.Left), new State(0, 0, 0)},
-				{new PartId(Part.Hiji, Position.Left), new State(MathHelper.PiOver2, MathHelper.PiOver2 * .8f, 0)},
-				{new PartId(Part.Tekubi, Position.Left), new State(0, 0, 0)},
-				{new PartId(Part.Tesaki, Position.Left), new State(0, 0, 0)},
-				{new PartId(Part.Mata, Position.Left), new State(0, 0, 0)},
-				{new PartId(Part.Hiza, Position.Left), new State(0, MathHelper.PiOver2, 0)},
-				{new PartId(Part.Ashikubi, Position.Left), new State(0, 0, 0)},
-				{new PartId(Part.Tsumasaki, Position.Left), new State(0, -MathHelper.PiOver2, 0)},
-			});
-			frame.Mirror();
-			return frame;
+				{new PartId(Part.Root, Position.Center), new RotationState(0, 0, 0)},
+				{new PartId(Part.Head, Position.Center), new RotationState(0, -MathHelper.PiOver2, 0)},
+				{new PartId(Part.Kata, Position.Left), new RotationState(0, 0, 0)},
+				{new PartId(Part.Hiji, Position.Left), new RotationState(MathHelper.PiOver2, MathHelper.PiOver2 * .8f, 0)},
+				{new PartId(Part.Tekubi, Position.Left), new RotationState(0, 0, 0)},
+				{new PartId(Part.Tesaki, Position.Left), new RotationState(0, 0, 0)},
+				{new PartId(Part.Mata, Position.Left), new RotationState(0, 0, 0)},
+				{new PartId(Part.Hiza, Position.Left), new RotationState(0, MathHelper.PiOver2, 0)},
+				{new PartId(Part.Ashikubi, Position.Left), new RotationState(0, 0, 0)},
+				{new PartId(Part.Tsumasaki, Position.Left), new RotationState(0, -MathHelper.PiOver2, 0)},
+			}
+			.Select(x=>new Frame(0, x.Key, x.Value))
+			.SelectMany(x=>x.Part.Position == Position.Left ? new[]{x, x.Mirror()} : new[]{x});
+			
 		}
 
 		public void Setup()
 		{
+			Comparison<Frame> comp = (f1, f2)=>
+			{
+				var d = f1.Time - f2.Time;
+				if(d == 0) return 0;
+				else if(d > 0) return 1;
+				else return -1;
+			};
+			frames.Sort(comp);
+			states = new Dictionary<PartId, JointState>();
+			foreach (var item in initials.Select(x=>x.Part))
+			{
+				var last = frames.Last(x => x.Part == item);
+				frames.Add(last.CreateFinalFrame());
+			}
 
+			foreach (var item in initials.Select(x=>x.Part))
+			{
+				var last = initials.Single(x=>x.Part == item);
+				var next = frames.First(x => x.Part == item && x.Time > 0);
+				states[item] = new JointState(last, next);
+			}
 		}
 
-		public Frame CurrentFrame(float second)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="time">現在時刻 > 直前のupdate時刻</param>
+		/// <returns></returns>
+		public IEnumerable<Frame> Update(double time)
 		{
-			var last = frames.Last(x => x.Time <= second);
-			var next = frames.First(x => x.Time > second);
-			var dict = new Dictionary<PartId, State>();
-			foreach (var item in frames[0].Values.Keys)
+			foreach (var item in states.ToArray())
 			{
-				
+				if (item.Value.Next.Time <= time)
+				{
+					var next = frames.First(x=>x.Part == item.Key && x.Time > time);
+					states[item.Key] = new JointState(item.Value.Next, next);
+				}
 			}
+			return states.Select(x => Frame.Lerp(x.Value.Last, x.Value.Next, time));
 		}
 
 

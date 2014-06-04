@@ -9,6 +9,33 @@ using System.Xml.Linq;
 
 namespace Masa.BridgeSim
 {
+	public class RotationState
+	{
+		public readonly float Yaw, Pitch, Roll;
+
+		public RotationState(float yaw, float pitch, float roll)
+		{
+			Yaw = yaw;
+			Pitch = pitch;
+			Roll = roll;
+		}
+
+		public RotationState Mirror()
+		{
+			return new RotationState(-Yaw, Pitch, -Roll);
+		}
+
+		public RotationState Lerp(RotationState s2, float weight)
+		{
+			return new RotationState(MathHelper.Lerp(Yaw, s2.Yaw, weight), MathHelper.Lerp(Pitch, s2.Pitch, weight), MathHelper.Lerp(Roll, s2.Roll, weight));
+		}
+
+		public override string ToString()
+		{
+			return string.Format("{0}, {1}, {2}", Yaw, Pitch, Roll);
+		}
+	}
+
 	public class Joint
 	{
 		//public Vector3 Position;
@@ -172,6 +199,13 @@ namespace Masa.BridgeSim
 			{
 				item.Draw(render);
 			}
+		}
+
+		public void ApplyState(RotationState s)
+		{
+			Yaw.Value = s.Yaw;
+			Pitch.Value = s.Pitch;
+			Roll.Value = s.Roll;
 		}
 
 		public XElement ToXml()

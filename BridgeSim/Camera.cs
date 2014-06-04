@@ -26,7 +26,7 @@ namespace Masa.BridgeSim
 		Vector3 Position, TargetPosition, Upper;
 		readonly Vector3 BasePosition;
 		readonly Vector3 Axis;
-		readonly double RotationSpeed = .4;
+		readonly double RotationSpeed = .0;
 
 		public Camera(Game game)
 			: base(game)

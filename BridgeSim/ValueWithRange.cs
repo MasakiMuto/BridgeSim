@@ -30,7 +30,12 @@ namespace Masa.BridgeSim
 			Value = value;
 		}
 
-		public ValueWithRange(float value, float min, float max)
+		public ValueWithRange(float min, float max)
+			: this(min, min, max)
+		{
+		}
+
+		private ValueWithRange(float value, float min, float max)
 		{
 			Min = min;
 			Max = max;
