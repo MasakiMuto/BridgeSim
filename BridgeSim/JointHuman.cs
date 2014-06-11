@@ -91,7 +91,9 @@ namespace Masa.BridgeSim
 			var pos = new PartId(Part.Hiji, Position.Left);
 			anime.AddFrameWithMirror(new KeyFrameAnime.Frame(3, pos, new RotationState(0, 0, 0)));
 			anime.AddFrameWithMirror(new KeyFrameAnime.Frame(5, pos, new RotationState(0, -MathHelper.PiOver2, 0)));
-			anime.AddFrame(new KeyFrameAnime.Frame(6, new PartId(Part.Root, Position.Center), new RotationState(0, -MathHelper.PiOver2, 0)));
+			//anime.AddFrame(new KeyFrameAnime.Frame(6, new PartId(Part.Root, Position.Center), new RotationState(0, -MathHelper.PiOver2, 0)));
+			SetBodyLine();
+			Bridge(10, MathHelper.PiOver2);
 			anime.Setup();
 
 		}
@@ -142,6 +144,21 @@ namespace Masa.BridgeSim
 					new Joint(Position.Center, Part.Head, 1, new Vector2(.5f, .5f), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(0, MathHelper.TwoPi), new ValueWithRange(0)) { Color = Color.Purple });
 		}
 
+		List<Joint[]> bodyLineList;
+
+		void SetBodyLine()
+		{
+			bodyLineList = new List<Joint[]>();
+			Action<Part> addPart = x => bodyLineList.Add(new[]{GetPart(Position.Center, x)});
+			Action<Part> addDouble = x => bodyLineList.Add(new[]{GetPart(Position.Left, x), GetPart(Position.Right, x)});
+			//addPart(Part.Head);
+			addPart(Part.Spine1);
+			addPart(Part.Spine2);
+			addDouble(Part.Hiza);
+			addDouble(Part.Ashikubi);
+			addDouble(Part.Tsumasaki);
+		}
+
 		void SetBind()
 		{
 			var left = GetPart(Position.Left, Part.Tsumasaki);
@@ -153,6 +170,21 @@ namespace Masa.BridgeSim
 		Joint GetPart(Position pos, Part part)
 		{
 			return allJoint[new PartId(part, pos)];
+		}
+
+		void Bridge(float time, float angle)
+		{
+			int i = 0;
+			
+			foreach (var set in bodyLineList.Reverse<Joint[]>())
+			{
+				float a = angle / (bodyLineList.Count - 1) * i;
+				foreach (var item in set)
+				{
+					anime.AddFrame(new KeyFrameAnime.Frame(time, new PartId(item.Name, item.Position), new RotationState(0, a, 0)));
+				}
+				i++;
+			}
 		}
 
 		public override void Update(GameTime gameTime)
@@ -169,8 +201,6 @@ namespace Masa.BridgeSim
 				delta = 0;
 			}
 			ApplyAnime(delta);
-			//var part = GetPart(Position.Left, Part.Kata);
-			//part.Yaw.Value = (float)(gameTime.TotalGameTime.TotalSeconds * 1.5f);
 		}
 
 		void ApplyAnime(double time)
