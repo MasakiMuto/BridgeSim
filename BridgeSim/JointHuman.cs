@@ -13,7 +13,9 @@ namespace Masa.BridgeSim
 	{
 		Head,
 		Root,
-		Kubi,
+		//Kubi,
+		Spine1,
+		Spine2,
 		Kata,
 		Hiji,
 		Tekubi,
@@ -89,27 +91,21 @@ namespace Masa.BridgeSim
 			var pos = new PartId(Part.Hiji, Position.Left);
 			anime.AddFrameWithMirror(new KeyFrameAnime.Frame(3, pos, new RotationState(0, 0, 0)));
 			anime.AddFrameWithMirror(new KeyFrameAnime.Frame(5, pos, new RotationState(0, -MathHelper.PiOver2, 0)));
-			anime.AddFrame(new KeyFrameAnime.Frame(6, new PartId(Part.Root, Position.Center), new RotationState(MathHelper.Pi, 0, MathHelper.TwoPi)));
+			anime.AddFrame(new KeyFrameAnime.Frame(6, new PartId(Part.Root, Position.Center), new RotationState(0, -MathHelper.PiOver2, 0)));
 			anime.Setup();
 
 		}
 
-		void ApplyAnime(double time)
-		{
-			var states = anime.Update(time).ToArray();
-			foreach (var item in allJoint)
-			{
-				item.Value.ApplyState(states.Single(x => x.Part == item.Key).State);
-			}
-		}
+		
 
 		void CreateNodes()
 		{
-			root = new Joint(Position.Center, Part.Root, 1, new Vector2(2, 4), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(0), new ValueWithRange(0))
-			{
-				Color = Color.Red
-			};
-			var leftArm = new Joint(Position.Left, Part.Kata, new Vector3(1, 2, 0))//肩
+			//root = new Joint(Position.Center, Part.Root, 1, new Vector2(2, 2), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(0), new ValueWithRange(0))
+			//{
+			//	Color = Color.Red
+			//};
+			root = new Joint(Position.Center, Part.Root, Vector3.Zero);//首元のルート
+			var leftArm = new Joint(Position.Left, Part.Kata, new Vector3(1, 0, 0))//肩
 			{
 				Visible = false
 			};
@@ -125,7 +121,9 @@ namespace Masa.BridgeSim
 			root.AddChild(leftArm);
 			root.AddChild(leftArm.Mirror());
 
-			var leftLeg = new Joint(Position.Left, Part.Mata, new Vector3(.5f, -2, 0));//股関節
+			var mata = new Joint(Position.Center, Part.Spine2, 2, new Vector2(2, 1), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(0), new ValueWithRange(0));//下半身
+
+			var leftLeg = new Joint(Position.Left, Part.Mata, new Vector3(.5f, 0, 0));//股関節
 			leftLeg.AddChild(new Joint(Position.Left, Part.Hiza, 2.5f, new Vector2(1f, 1), Vector3.Zero, new ValueWithRange(-MathHelper.PiOver2, MathHelper.PiOver2), new ValueWithRange(-MathHelper.PiOver2, MathHelper.Pi), new ValueWithRange(-MathHelper.PiOver4, MathHelper.PiOver4)) { Color = Color.LightBlue }//膝
 				.AddChild(
 					new Joint(Position.Left, Part.Ashikubi, 2.5f, new Vector2(.8f, .8f), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(0, MathHelper.Pi), new ValueWithRange(-MathHelper.Pi / 8, MathHelper.Pi / 8)) { Color = Color.Blue }//足首
@@ -134,20 +132,22 @@ namespace Masa.BridgeSim
 					)
 				)
 			);
-			root.AddChild(leftLeg);
-			root.AddChild(leftLeg.Mirror());
+			mata.AddChild(leftLeg);
+			mata.AddChild(leftLeg.Mirror());
 
+			root.AddChild(new Joint(Position.Center, Part.Spine1, 2, new Vector2(2, 1), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(0), new ValueWithRange(0))//胸部
+				.AddChild(mata));
+				
 			root.AddChild(
-				new Joint(Position.Center, Part.Kubi, new Vector3(0, 2, 0))
-				.AddChild(
-					new Joint(Position.Center, Part.Head, 1, new Vector2(.5f, .5f), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(-MathHelper.PiOver2 * 3, 0), new ValueWithRange(0)) { Color = Color.Purple }));	
+					new Joint(Position.Center, Part.Head, 1, new Vector2(.5f, .5f), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(0, MathHelper.TwoPi), new ValueWithRange(0)) { Color = Color.Purple });
 		}
 
 		void SetBind()
 		{
 			var left = GetPart(Position.Left, Part.Tsumasaki);
 			var right = GetPart(Position.Right, Part.Tsumasaki);
-			Translate = new Vector3(0, -left.GetAbsolutePosition().Y, 0);
+			Translate += new Vector3(0, -left.GetAbsolutePosition().Y, 0);
+			//Translate = new Vector3(0, 7, 0);
 		}
 
 		Joint GetPart(Position pos, Part part)
@@ -171,6 +171,16 @@ namespace Masa.BridgeSim
 			ApplyAnime(delta);
 			//var part = GetPart(Position.Left, Part.Kata);
 			//part.Yaw.Value = (float)(gameTime.TotalGameTime.TotalSeconds * 1.5f);
+		}
+
+		void ApplyAnime(double time)
+		{
+			var states = anime.Update(time).ToArray();
+			foreach (var item in allJoint)
+			{
+				item.Value.ApplyState(states.Single(x => x.Part == item.Key).State);
+			}
+			SetBind();
 		}
 
 		public void SaveToXml(string name)

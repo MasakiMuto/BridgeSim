@@ -71,6 +71,7 @@ namespace Masa.BridgeSim
 		{
 			frames = new List<Frame>();
 			initials = CreateInitial().ToArray();
+			Debug.Assert(initials.Select(x => x.Part.Part).Distinct().Count() == Enum.GetValues(typeof(Part)).Length);//全部位のキーフレームがあるか
 			frames.AddRange(initials);
 		}
 
@@ -90,14 +91,16 @@ namespace Masa.BridgeSim
 			return new Dictionary<PartId, RotationState>
 			{
 				{new PartId(Part.Root, Position.Center), new RotationState(0, 0, 0)},
-				{new PartId(Part.Kubi, Position.Center), new RotationState(0, 0, 0)},
-				{new PartId(Part.Head, Position.Center), new RotationState(0, -MathHelper.PiOver2, 0)},
+				{new PartId(Part.Spine1, Position.Center), new RotationState(0, 0, 0)},
+				{new PartId(Part.Spine2, Position.Center), new RotationState(0, 0, 0)},
+				//{new PartId(Part.Kubi, Position.Center), new RotationState(0, 0, 0)},
+				{new PartId(Part.Head, Position.Center), new RotationState(0, MathHelper.Pi, 0)},
 				{new PartId(Part.Kata, Position.Left), new RotationState(0, 0, 0)},
-				{new PartId(Part.Hiji, Position.Left), new RotationState(MathHelper.PiOver2, MathHelper.PiOver2 * .8f, 0)},
+				{new PartId(Part.Hiji, Position.Left), new RotationState(0, MathHelper.PiOver2 * .8f, 0)},
 				{new PartId(Part.Tekubi, Position.Left), new RotationState(0, 0, 0)},
 				{new PartId(Part.Tesaki, Position.Left), new RotationState(0, 0, 0)},
 				{new PartId(Part.Mata, Position.Left), new RotationState(0, 0, 0)},
-				{new PartId(Part.Hiza, Position.Left), new RotationState(0, MathHelper.PiOver2, 0)},
+				{new PartId(Part.Hiza, Position.Left), new RotationState(0, 0, 0)},
 				{new PartId(Part.Ashikubi, Position.Left), new RotationState(0, 0, 0)},
 				{new PartId(Part.Tsumasaki, Position.Left), new RotationState(0, -MathHelper.PiOver2, 0)},
 			}

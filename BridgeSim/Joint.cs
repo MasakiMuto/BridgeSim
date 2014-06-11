@@ -126,7 +126,7 @@ namespace Masa.BridgeSim
 			}
 			else
 			{
-				return Parent.GetAbsolutePosition() + Vector3.Transform(ParentOffset, GetWorldRotation()) + Vector3.Transform(Vector3.UnitZ * Length, GetWorldRotation());
+				return Parent.GetAbsolutePosition() + Vector3.Transform(ParentOffset, GetWorldRotation()) + Vector3.Transform(-Vector3.UnitY * Length, GetWorldRotation());
 			}
 		}
 
@@ -197,7 +197,7 @@ namespace Masa.BridgeSim
 			{
 				var trans = Matrix.CreateTranslation(GetAbsoluteCenter());
 				var rot = Matrix.CreateFromQuaternion(GetWorldRotation());
-				var scale = Matrix.CreateScale(Size.X * .5f, Size.Y * .5f, Length * .5f);
+				var scale = Matrix.CreateScale(Size.X * .5f, Length * .5f, Size.Y * .5f);
 				render.DrawBox(Color, scale * rot * trans);
 			}
 
