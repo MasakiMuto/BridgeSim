@@ -130,9 +130,9 @@ namespace Masa.BridgeSim
 			}
 		}
 
-		Matrix GetWorldRotation()
+		Quaternion GetWorldRotation()
 		{
-			var m = Matrix.CreateFromYawPitchRoll(Yaw.Value, Pitch.Value, Roll.Value);
+			var m = Quaternion.CreateFromYawPitchRoll(Yaw.Value, Pitch.Value, Roll.Value);
 			if (Parent == null)
 			{
 				return m;
@@ -196,7 +196,7 @@ namespace Masa.BridgeSim
 			if (Visible)
 			{
 				var trans = Matrix.CreateTranslation(GetAbsoluteCenter());
-				var rot = GetWorldRotation();
+				var rot = Matrix.CreateFromQuaternion(GetWorldRotation());
 				var scale = Matrix.CreateScale(Size.X * .5f, Size.Y * .5f, Length * .5f);
 				render.DrawBox(Color, scale * rot * trans);
 			}
