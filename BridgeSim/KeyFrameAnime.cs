@@ -90,6 +90,7 @@ namespace Masa.BridgeSim
 			return new Dictionary<PartId, RotationState>
 			{
 				{new PartId(Part.Root, Position.Center), new RotationState(0, 0, 0)},
+				{new PartId(Part.Kubi, Position.Center), new RotationState(0, 0, 0)},
 				{new PartId(Part.Head, Position.Center), new RotationState(0, -MathHelper.PiOver2, 0)},
 				{new PartId(Part.Kata, Position.Left), new RotationState(0, 0, 0)},
 				{new PartId(Part.Hiji, Position.Left), new RotationState(MathHelper.PiOver2, MathHelper.PiOver2 * .8f, 0)},
@@ -122,30 +123,41 @@ namespace Masa.BridgeSim
 				frames.Add(last.CreateFinalFrame());
 			}
 
-			foreach (var item in initials.Select(x=>x.Part))
+			Reset();
+		}
+
+
+
+		public void Reset()
+		{
+			lastTime = 0;
+			foreach (var item in initials.Select(x => x.Part))
 			{
-				var last = initials.Single(x=>x.Part == item);
+				var last = initials.Single(x => x.Part == item);
 				var next = frames.First(x => x.Part == item && x.Time > 0);
 				states[item] = new JointState(last, next);
 			}
 		}
+
+		double lastTime;
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="time">現在時刻 > 直前のupdate時刻</param>
 		/// <returns></returns>
-		public IEnumerable<Frame> Update(double time)
+		public IEnumerable<Frame> Update(double delta)
 		{
+			lastTime += delta;
 			foreach (var item in states.ToArray())
 			{
-				if (item.Value.Next.Time <= time)
+				if (item.Value.Next.Time <= lastTime)
 				{
-					var next = frames.First(x=>x.Part == item.Key && x.Time > time);
+					var next = frames.First(x=>x.Part == item.Key && x.Time > lastTime);
 					states[item.Key] = new JointState(item.Value.Next, next);
 				}
 			}
-			return states.Select(x => Frame.Lerp(x.Value.Last, x.Value.Next, time));
+			return states.Select(x => Frame.Lerp(x.Value.Last, x.Value.Next, lastTime));
 		}
 
 

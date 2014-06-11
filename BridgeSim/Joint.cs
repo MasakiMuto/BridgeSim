@@ -73,6 +73,12 @@ namespace Masa.BridgeSim
 			Mass = length * size.X * size.Y;
 		}
 
+		public Joint(Position pos, Part name, Vector3 parentOffset)
+			: this(pos, name, 0, Vector2.Zero, parentOffset, new ValueWithRange(0), new ValueWithRange(0), new ValueWithRange(0))
+		{
+			Visible = false;
+		}
+
 		public override int GetHashCode()
 		{
 			return (int)Position * (int)Name;
@@ -120,7 +126,7 @@ namespace Masa.BridgeSim
 			}
 			else
 			{
-				return Parent.GetAbsolutePosition() + ParentOffset + Vector3.Transform(Vector3.UnitZ * Length, GetWorldRotation());
+				return Parent.GetAbsolutePosition() + Vector3.Transform(ParentOffset, GetWorldRotation()) + Vector3.Transform(Vector3.UnitZ * Length, GetWorldRotation());
 			}
 		}
 

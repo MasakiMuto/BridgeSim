@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using System.Xml.Linq;
+using Microsoft.Xna.Framework.Input;
 
 namespace Masa.BridgeSim
 {
@@ -12,6 +13,7 @@ namespace Masa.BridgeSim
 	{
 		Head,
 		Root,
+		Kubi,
 		Kata,
 		Hiji,
 		Tekubi,
@@ -85,8 +87,9 @@ namespace Masa.BridgeSim
 		{
 			anime = new KeyFrameAnime();
 			var pos = new PartId(Part.Hiji, Position.Left);
-			anime.AddFrameWithMirror(new KeyFrameAnime.Frame(3, pos, new RotationState(0, 0, 0)));
-			anime.AddFrameWithMirror(new KeyFrameAnime.Frame(5, pos, new RotationState(0, -MathHelper.PiOver2, 0)));
+			//anime.AddFrameWithMirror(new KeyFrameAnime.Frame(3, pos, new RotationState(0, 0, 0)));
+			//anime.AddFrameWithMirror(new KeyFrameAnime.Frame(5, pos, new RotationState(0, -MathHelper.PiOver2, 0)));
+			anime.AddFrame(new KeyFrameAnime.Frame(6, new PartId(Part.Root, Position.Center), new RotationState(MathHelper.Pi, 0, 0)));
 			anime.Setup();
 
 		}
@@ -106,7 +109,7 @@ namespace Masa.BridgeSim
 			{
 				Color = Color.Red
 			};
-			var leftArm = new Joint(Position.Left, Part.Kata, 0, Vector2.Zero, new Vector3(1, 2, 0), new ValueWithRange(0), new ValueWithRange(0), new ValueWithRange(0))//肩
+			var leftArm = new Joint(Position.Left, Part.Kata, new Vector3(1, 2, 0))//肩
 			{
 				Visible = false
 			};
@@ -122,7 +125,7 @@ namespace Masa.BridgeSim
 			root.AddChild(leftArm);
 			root.AddChild(leftArm.Mirror());
 
-			var leftLeg = new Joint(Position.Left, Part.Mata, 0, Vector2.Zero, new Vector3(.5f, -2, 0), new ValueWithRange(0), new ValueWithRange(0), new ValueWithRange(0)) { Visible = false };//股関節
+			var leftLeg = new Joint(Position.Left, Part.Mata, new Vector3(.5f, -2, 0));//股関節
 			leftLeg.AddChild(new Joint(Position.Left, Part.Hiza, 2.5f, new Vector2(1f, 1), Vector3.Zero, new ValueWithRange(-MathHelper.PiOver2, MathHelper.PiOver2), new ValueWithRange(-MathHelper.PiOver2, MathHelper.Pi), new ValueWithRange(-MathHelper.PiOver4, MathHelper.PiOver4)) { Color = Color.LightBlue }//膝
 				.AddChild(
 					new Joint(Position.Left, Part.Ashikubi, 2.5f, new Vector2(.8f, .8f), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(0, MathHelper.Pi), new ValueWithRange(-MathHelper.Pi / 8, MathHelper.Pi / 8)) { Color = Color.Blue }//足首
@@ -134,7 +137,10 @@ namespace Masa.BridgeSim
 			root.AddChild(leftLeg);
 			root.AddChild(leftLeg.Mirror());
 
-			root.AddChild(new Joint(Position.Center, Part.Head, 1, new Vector2(.5f, .5f), new Vector3(0, 2, 0), new ValueWithRange(0), new ValueWithRange(-MathHelper.PiOver2 * 3, 0), new ValueWithRange(0)) { Color = Color.Purple });
+			root.AddChild(
+				new Joint(Position.Center, Part.Kubi, new Vector3(0, 2, 0))
+				.AddChild(
+					new Joint(Position.Center, Part.Head, 1, new Vector2(.5f, .5f), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(-MathHelper.PiOver2 * 3, 0), new ValueWithRange(0)) { Color = Color.Purple }));	
 		}
 
 		void SetBind()
@@ -152,7 +158,17 @@ namespace Masa.BridgeSim
 		public override void Update(GameTime gameTime)
 		{
 			base.Update(gameTime);
-			ApplyAnime(gameTime.TotalGameTime.TotalSeconds);
+			var state = Keyboard.GetState();
+			if (state.IsKeyDown(Keys.Escape))
+			{
+				anime.Reset();
+			}
+			var delta = gameTime.ElapsedGameTime.TotalSeconds;
+			if (state.IsKeyDown(Keys.Space))
+			{
+				delta = 0;
+			}
+			ApplyAnime(delta);
 			//var part = GetPart(Position.Left, Part.Kata);
 			//part.Yaw.Value = (float)(gameTime.TotalGameTime.TotalSeconds * 1.5f);
 		}
