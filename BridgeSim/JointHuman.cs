@@ -89,11 +89,11 @@ namespace Masa.BridgeSim
 		{
 			anime = new KeyFrameAnime();
 			var pos = new PartId(Part.Hiji, Position.Left);
-			anime.AddFrameWithMirror(new KeyFrameAnime.Frame(3, pos, new RotationState(0, 0, 0)));
-			anime.AddFrameWithMirror(new KeyFrameAnime.Frame(5, pos, new RotationState(0, -MathHelper.PiOver2, 0)));
+			//anime.AddFrameWithMirror(new KeyFrameAnime.Frame(3, pos, new RotationState(0, 0, 0)));
+			//anime.AddFrameWithMirror(new KeyFrameAnime.Frame(5, pos, new RotationState(0, 0, -MathHelper.PiOver2)));
 			//anime.AddFrame(new KeyFrameAnime.Frame(6, new PartId(Part.Root, Position.Center), new RotationState(0, -MathHelper.PiOver2, 0)));
 			SetBodyLine();
-			Bridge(10, MathHelper.PiOver2);
+			//Bridge(10, -MathHelper.PiOver2);
 			anime.Setup();
 
 		}
@@ -112,11 +112,11 @@ namespace Masa.BridgeSim
 				Visible = false
 			};
 			leftArm.AddChild(
-				new Joint(Position.Left, Part.Hiji, 2, new Vector2(.3f, .3f), Vector3.Zero, new ValueWithRange(-MathHelper.PiOver2, MathHelper.Pi), new ValueWithRange(-MathHelper.Pi, MathHelper.Pi), new ValueWithRange(-MathHelper.PiOver2, MathHelper.PiOver2)) { Color = Color.Pink }//ひじ
+				new Joint(Position.Left, Part.Hiji, 2, new Vector2(.3f, .3f), Vector3.Zero, new ValueWithRange(-MathHelper.PiOver2, MathHelper.PiOver2), new ValueWithRange(-MathHelper.Pi, MathHelper.PiOver2), new ValueWithRange(-MathHelper.PiOver2, MathHelper.Pi)) { Color = Color.Pink }//ひじ
 				.AddChild(
-					new Joint(Position.Left, Part.Tekubi, 2f, new Vector2(.3f, .3f), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(0), new ValueWithRange(0)) { Color = Color.Peru }//手首
+					new Joint(Position.Left, Part.Tekubi, 2f, new Vector2(.3f, .3f), Vector3.Zero, new ValueWithRange(-MathHelper.PiOver2, MathHelper.PiOver2), new ValueWithRange(0, 0), new ValueWithRange(-MathHelper.PiOver4 * 3, 0)) { Color = Color.Peru }//手首
 					.AddChild(
-						new Joint(Position.Left, Part.Tesaki, .7f, new Vector2(.5f, .3f), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(0), new ValueWithRange(0)) { Color = Color.Green }//手先
+						new Joint(Position.Left, Part.Tesaki, .7f, new Vector2(.5f, .3f), Vector3.Zero, new ValueWithRange(-MathHelper.PiOver2, MathHelper.PiOver2), new ValueWithRange(0, 0), new ValueWithRange(-MathHelper.PiOver2, MathHelper.PiOver2)) { Color = Color.Green }//手先
 					)
 				)
 			);
@@ -126,11 +126,11 @@ namespace Masa.BridgeSim
 			var mata = new Joint(Position.Center, Part.Spine2, 2, new Vector2(2, 1), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(0), new ValueWithRange(0));//下半身
 
 			var leftLeg = new Joint(Position.Left, Part.Mata, new Vector3(.5f, 0, 0));//股関節
-			leftLeg.AddChild(new Joint(Position.Left, Part.Hiza, 2.5f, new Vector2(1f, 1), Vector3.Zero, new ValueWithRange(-MathHelper.PiOver2, MathHelper.PiOver2), new ValueWithRange(-MathHelper.PiOver2, MathHelper.Pi), new ValueWithRange(-MathHelper.PiOver4, MathHelper.PiOver4)) { Color = Color.LightBlue }//膝
+			leftLeg.AddChild(new Joint(Position.Left, Part.Hiza, 2.5f, new Vector2(1f, 1), Vector3.Zero, new ValueWithRange(-MathHelper.PiOver4, MathHelper.PiOver4), new ValueWithRange(-MathHelper.PiOver2, MathHelper.PiOver4), new ValueWithRange(-MathHelper.PiOver2, MathHelper.PiOver2)) { Color = Color.LightBlue }//膝
 				.AddChild(
-					new Joint(Position.Left, Part.Ashikubi, 2.5f, new Vector2(.8f, .8f), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(0, MathHelper.Pi), new ValueWithRange(-MathHelper.Pi / 8, MathHelper.Pi / 8)) { Color = Color.Blue }//足首
+					new Joint(Position.Left, Part.Ashikubi, 2.5f, new Vector2(.8f, .8f), Vector3.Zero, new ValueWithRange(0, 0), new ValueWithRange(0, MathHelper.PiOver4 * 3), new ValueWithRange(0, 0)) { Color = Color.Blue }//足首
 					.AddChild(
-						new Joint(Position.Left, Part.Tsumasaki, 1f, new Vector2(1f, .3f), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(-MathHelper.PiOver2 * 1.5f, -MathHelper.PiOver2 * .5f), new ValueWithRange(0, 0)) { Color = Color.BlueViolet }//足先
+						new Joint(Position.Left, Part.Tsumasaki, 1f, new Vector2(1f, .3f), Vector3.Zero, new ValueWithRange(-MathHelper.PiOver4 / 2, MathHelper.PiOver4 / 2), new ValueWithRange(-MathHelper.PiOver2 * 1.5f, -MathHelper.PiOver2 * .5f), new ValueWithRange(0, 0)) { Color = Color.BlueViolet }//足先
 					)
 				)
 			);

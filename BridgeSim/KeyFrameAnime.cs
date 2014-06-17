@@ -96,7 +96,7 @@ namespace Masa.BridgeSim
 				//{new PartId(Part.Kubi, Position.Center), new RotationState(0, 0, 0)},
 				{new PartId(Part.Head, Position.Center), new RotationState(0, MathHelper.Pi, 0)},
 				{new PartId(Part.Kata, Position.Left), new RotationState(0, 0, 0)},
-				{new PartId(Part.Hiji, Position.Left), new RotationState(0, MathHelper.PiOver2 * .8f, 0)},
+				{new PartId(Part.Hiji, Position.Left), new RotationState(0, 0, 0)},
 				{new PartId(Part.Tekubi, Position.Left), new RotationState(0, 0, 0)},
 				{new PartId(Part.Tesaki, Position.Left), new RotationState(0, 0, 0)},
 				{new PartId(Part.Mata, Position.Left), new RotationState(0, 0, 0)},
