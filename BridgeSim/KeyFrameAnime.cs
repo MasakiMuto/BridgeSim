@@ -102,7 +102,7 @@ namespace Masa.BridgeSim
 				{new PartId(Part.Mata, Position.Left), new RotationState(0, 0, 0)},
 				{new PartId(Part.Hiza, Position.Left), new RotationState(0, 0, 0)},
 				{new PartId(Part.Ashikubi, Position.Left), new RotationState(0, 0, 0)},
-				{new PartId(Part.Tsumasaki, Position.Left), new RotationState(0, -MathHelper.PiOver2, 0)},
+				{new PartId(Part.Tsumasaki, Position.Left), new RotationState(0, 0, 0)},
 			}
 			.Select(x=>new Frame(0, x.Key, x.Value))
 			.SelectMany(x=>x.Part.Position == Position.Left ? new[]{x, x.Mirror()} : new[]{x});

@@ -93,7 +93,7 @@ namespace Masa.BridgeSim
 			//anime.AddFrameWithMirror(new KeyFrameAnime.Frame(5, pos, new RotationState(0, 0, -MathHelper.PiOver2)));
 			//anime.AddFrame(new KeyFrameAnime.Frame(6, new PartId(Part.Root, Position.Center), new RotationState(0, -MathHelper.PiOver2, 0)));
 			SetBodyLine();
-			//Bridge(10, -MathHelper.PiOver2);
+			Bridge(10, MathHelper.PiOver2);
 			anime.Setup();
 
 		}
@@ -130,7 +130,7 @@ namespace Masa.BridgeSim
 				.AddChild(
 					new Joint(Position.Left, Part.Ashikubi, 2.5f, new Vector2(.8f, .8f), Vector3.Zero, new ValueWithRange(0, 0), new ValueWithRange(0, MathHelper.PiOver4 * 3), new ValueWithRange(0, 0)) { Color = Color.Blue }//足首
 					.AddChild(
-						new Joint(Position.Left, Part.Tsumasaki, 1f, new Vector2(1f, .3f), Vector3.Zero, new ValueWithRange(-MathHelper.PiOver4 / 2, MathHelper.PiOver4 / 2), new ValueWithRange(-MathHelper.PiOver2 * 1.5f, -MathHelper.PiOver2 * .5f), new ValueWithRange(0, 0)) { Color = Color.BlueViolet }//足先
+						new Joint(Position.Left, Part.Tsumasaki, .3f, new Vector2(1f, 1f), Vector3.Zero, new ValueWithRange(-MathHelper.PiOver4 / 2, MathHelper.PiOver4 / 2), new ValueWithRange(-MathHelper.PiOver2 * .5f, MathHelper.PiOver2 * .5f), new ValueWithRange(0, 0)) { Color = Color.BlueViolet }//足先
 					)
 				)
 			);
