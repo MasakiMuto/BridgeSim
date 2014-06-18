@@ -93,7 +93,8 @@ namespace Masa.BridgeSim
 			//anime.AddFrameWithMirror(new KeyFrameAnime.Frame(5, pos, new RotationState(0, 0, -MathHelper.PiOver2)));
 			//anime.AddFrame(new KeyFrameAnime.Frame(6, new PartId(Part.Root, Position.Center), new RotationState(0, -MathHelper.PiOver2, 0)));
 			SetBodyLine();
-			Bridge(10, MathHelper.PiOver2);
+			Bridge(5, MathHelper.PiOver2 * 1.5f);
+			Bridge(10, 0);
 			anime.Setup();
 
 		}
@@ -123,7 +124,7 @@ namespace Masa.BridgeSim
 			root.AddChild(leftArm);
 			root.AddChild(leftArm.Mirror());
 
-			var mata = new Joint(Position.Center, Part.Spine2, 2, new Vector2(2, 1), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(0), new ValueWithRange(0));//下半身
+			var mata = new Joint(Position.Center, Part.Spine2, 2, new Vector2(2, 1), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(-MathHelper.PiOver4 / 2, MathHelper.PiOver4), new ValueWithRange(0));//下半身
 
 			var leftLeg = new Joint(Position.Left, Part.Mata, new Vector3(.5f, 0, 0));//股関節
 			leftLeg.AddChild(new Joint(Position.Left, Part.Hiza, 2.5f, new Vector2(1f, 1), Vector3.Zero, new ValueWithRange(-MathHelper.PiOver4, MathHelper.PiOver4), new ValueWithRange(-MathHelper.PiOver2, MathHelper.PiOver4), new ValueWithRange(-MathHelper.PiOver2, MathHelper.PiOver2)) { Color = Color.LightBlue }//膝
@@ -137,7 +138,7 @@ namespace Masa.BridgeSim
 			mata.AddChild(leftLeg);
 			mata.AddChild(leftLeg.Mirror());
 
-			root.AddChild(new Joint(Position.Center, Part.Spine1, 2, new Vector2(2, 1), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(0), new ValueWithRange(0))//胸部
+			root.AddChild(new Joint(Position.Center, Part.Spine1, 2, new Vector2(2, 1), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(-MathHelper.PiOver4 / 2, MathHelper.PiOver4), new ValueWithRange(0))//胸部
 				.AddChild(mata));
 				
 			root.AddChild(
@@ -178,7 +179,7 @@ namespace Masa.BridgeSim
 			
 			foreach (var set in bodyLineList.Reverse<Joint[]>())
 			{
-				float a = angle / (bodyLineList.Count - 1) * i;
+				float a = angle / (bodyLineList.Count - 1);
 				foreach (var item in set)
 				{
 					anime.AddFrame(new KeyFrameAnime.Frame(time, new PartId(item.Name, item.Position), new RotationState(0, a, 0)));
@@ -200,6 +201,14 @@ namespace Masa.BridgeSim
 			{
 				delta = 0;
 			}
+			//if (state.IsKeyDown(Keys.Z))
+			//{
+			//	float from = (float)gameTime.TotalGameTime.TotalSeconds;
+			//	anime.Reset();
+			//	Bridge(from + 5, MathHelper.PiOver2 * 1.5f);
+			//	Bridge(from + 10, 0);
+			//	anime.Setup();
+			//}
 			ApplyAnime(delta);
 		}
 

@@ -134,12 +134,17 @@ namespace Masa.BridgeSim
 		public void Reset()
 		{
 			lastTime = 0;
-			foreach (var item in initials.Select(x => x.Part))
+			foreach (var item in initials.Select(x => x.Part))//初期姿勢設定
 			{
 				var last = initials.Single(x => x.Part == item);
-				var next = frames.First(x => x.Part == item && x.Time > 0);
-				states[item] = new JointState(last, next);
+				SetNextFrame(0, item, last);
 			}
+		}
+
+		void SetNextFrame(double lastTime, PartId part, Frame last)
+		{
+			var next = frames.First(x => x.Part == part && x.Time > lastTime);
+			states[part] = new JointState(last, next);
 		}
 
 		double lastTime;
@@ -156,8 +161,7 @@ namespace Masa.BridgeSim
 			{
 				if (item.Value.Next.Time <= lastTime)
 				{
-					var next = frames.First(x=>x.Part == item.Key && x.Time > lastTime);
-					states[item.Key] = new JointState(item.Value.Next, next);
+					SetNextFrame(lastTime, item.Key, item.Value.Next);
 				}
 			}
 			return states.Select(x => Frame.Lerp(x.Value.Last, x.Value.Next, lastTime));
