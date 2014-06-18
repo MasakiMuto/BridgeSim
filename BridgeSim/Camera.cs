@@ -26,7 +26,7 @@ namespace Masa.BridgeSim
 		Vector3 Position, TargetPosition, Upper;
 		readonly Vector3 BasePosition;
 		readonly Vector3 Axis;
-		readonly double RotationSpeed = .0;
+		readonly double RotationSpeed = .005;
 
 		public Camera(Game game)
 			: base(game)
@@ -37,10 +37,14 @@ namespace Masa.BridgeSim
 			Axis = new Vector3(0, 1, 0);
 		}
 
+		float rot = 0;
+
 		public override void Update(GameTime gameTime)
 		{
 			base.Update(gameTime);
-			var q = Quaternion.CreateFromAxisAngle(Axis, (float)(gameTime.TotalGameTime.TotalSeconds * RotationSpeed));
+			var mouse = Microsoft.Xna.Framework.Input.Mouse.GetState();
+			rot = mouse.ScrollWheelValue;
+			var q = Quaternion.CreateFromAxisAngle(Axis, (float)(rot * RotationSpeed));
 			Position = Vector3.Transform(BasePosition, q);
 		}
 	}
