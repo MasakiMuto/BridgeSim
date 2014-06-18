@@ -57,6 +57,13 @@ namespace Masa.BridgeSim
 
 		public float Mass { get; set; }
 
+		public static Matrix GlobalInverse { get; set; }
+
+		static Joint()
+		{
+			GlobalInverse = Matrix.Identity;
+		}
+
 		public Joint(Position pos, Part name, float length, Vector2 size, Vector3 parentOffset, ValueWithRange yaw, ValueWithRange pitch, ValueWithRange roll)
 			: this()
 		{
@@ -191,14 +198,20 @@ namespace Masa.BridgeSim
 			};
 		}
 
+		public Matrix GetWorld()
+		{
+			var trans = Matrix.CreateTranslation(GetAbsoluteCenter());
+			var rot = Matrix.CreateFromQuaternion(GetWorldRotation());
+			return rot * trans;
+		}
+
 		public void Draw(BoxRenderer render)
 		{
 			if (Visible)
 			{
-				var trans = Matrix.CreateTranslation(GetAbsoluteCenter());
-				var rot = Matrix.CreateFromQuaternion(GetWorldRotation());
 				var scale = Matrix.CreateScale(Size.X * .5f, Length * .5f, Size.Y * .5f);
-				render.DrawBox(Color, scale * rot * trans);
+
+				render.DrawBox(Color, scale * GetWorld() * GlobalInverse);
 			}
 
 			foreach (var item in Children)

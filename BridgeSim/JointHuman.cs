@@ -163,8 +163,8 @@ namespace Masa.BridgeSim
 		{
 			var left = GetPart(Position.Left, Part.Tsumasaki);
 			var right = GetPart(Position.Right, Part.Tsumasaki);
-			Translate += new Vector3(0, -left.GetAbsolutePosition().Y, 0);
-			//Translate = new Vector3(0, 7, 0);
+			//Translate += new Vector3(0, -left.GetAbsolutePosition().Y, 0);
+			Joint.GlobalInverse = Matrix.Invert(left.GetWorld());
 		}
 
 		Joint GetPart(Position pos, Part part)
