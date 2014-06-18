@@ -154,7 +154,7 @@ namespace Masa.BridgeSim
 		/// 自分と親とをつなぐ肉の中心
 		/// </summary>
 		/// <returns></returns>
-		Vector3 GetAbsoluteCenter()
+		public Vector3 GetAbsoluteCenter()
 		{
 			if (Parent == null)
 			{

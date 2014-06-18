@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using System.Xml.Linq;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Masa.BridgeSim
 {
@@ -93,8 +94,10 @@ namespace Masa.BridgeSim
 			//anime.AddFrameWithMirror(new KeyFrameAnime.Frame(5, pos, new RotationState(0, 0, -MathHelper.PiOver2)));
 			//anime.AddFrame(new KeyFrameAnime.Frame(6, new PartId(Part.Root, Position.Center), new RotationState(0, -MathHelper.PiOver2, 0)));
 			SetBodyLine();
-			Bridge(5, MathHelper.PiOver2 * 1.5f);
-			Bridge(10, 0);
+			var a = MathHelper.PiOver2 * 1.5f;
+			Bridge(3, a);
+			Bridge(4, a);
+			Bridge(5, 0);
 			anime.Setup();
 
 		}
@@ -159,6 +162,8 @@ namespace Masa.BridgeSim
 			addDouble(Part.Ashikubi);
 			addDouble(Part.Tsumasaki);
 		}
+
+		
 
 		void SetBind()
 		{
@@ -236,6 +241,27 @@ namespace Masa.BridgeSim
 			var box = Game.GetComponent<BoxRenderer>();
 			box.Begin();
 			root.Draw(box);
+			DrawGravityCenter();
+		}
+
+		Vector3 GetGravityCenter()
+		{
+			var a = Vector3.Zero;
+			var w = 0f;
+			foreach (var item in allJoint.Values)
+			{
+				a += item.GetAbsoluteCenter() * item.Mass;
+				w += item.Mass;
+			}
+			return a / w;
+		}
+
+		void DrawGravityCenter()
+		{
+			var p = GetGravityCenter();
+			GraphicsDevice.DepthStencilState = DepthStencilState.None;
+			Game.GetComponent<BoxRenderer>().DrawBox(Color.Pink, Matrix.CreateScale(.1f) * Matrix.CreateTranslation(p) * Joint.GlobalInverse);
+			GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 		}
 	}
 }
