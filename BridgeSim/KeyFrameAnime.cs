@@ -51,6 +51,11 @@ namespace Masa.BridgeSim
 				return new Frame(double.PositiveInfinity, Part, State);
 			}
 
+			public Frame[] ShiftTime(double t)
+			{
+				return new[]{ this,  new Frame(Time + t, Part, State) };
+			}
+
 		}
 
 		struct JointState
@@ -75,15 +80,15 @@ namespace Masa.BridgeSim
 			frames.AddRange(initials);
 		}
 
-		public void AddFrame(Frame f)
+		public void AddFrame(params Frame[] f)
 		{
-			frames.Add(f);
+			frames.AddRange(f);
 		}
 
-		public void AddFrameWithMirror(Frame f)
+		public void AddFrameWithMirror(params Frame[] f)
 		{
-			frames.Add(f);
-			frames.Add(f.Mirror());
+			frames.AddRange(f);
+			frames.AddRange(f.Select(x=> x.Mirror()));
 		}
 
 		IEnumerable<Frame> CreateInitial()
@@ -107,6 +112,19 @@ namespace Masa.BridgeSim
 			.Select(x=>new Frame(0, x.Key, x.Value))
 			.SelectMany(x=>x.Part.Position == Position.Left ? new[]{x, x.Mirror()} : new[]{x});
 			
+		}
+
+		public void SetAsZero(PartId part, double time, bool mirror)
+		{
+			var frame = new Frame(time, part, initials.Single(x => x.Part == part).State);
+			if (mirror)
+			{
+				AddFrameWithMirror(frame);
+			}
+			else
+			{
+				AddFrame(frame);
+			}
 		}
 
 		public void Setup()

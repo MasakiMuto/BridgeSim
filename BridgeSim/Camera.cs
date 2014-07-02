@@ -33,7 +33,7 @@ namespace Masa.BridgeSim
 		{
 			TargetPosition = new Vector3(0, 5, 0);
 			Upper = Vector3.Up;
-			BasePosition = new Vector3(10, 15, 10);
+			BasePosition = new Vector3(10, 10, 10);
 			Axis = new Vector3(0, 1, 0);
 		}
 

@@ -95,11 +95,37 @@ namespace Masa.BridgeSim
 			//anime.AddFrame(new KeyFrameAnime.Frame(6, new PartId(Part.Root, Position.Center), new RotationState(0, -MathHelper.PiOver2, 0)));
 			SetBodyLine();
 			var a = MathHelper.PiOver2 * 1.5f;
-			Bridge(3, a);
-			Bridge(4, a);
+			Ojigi(1);
 			Bridge(5, 0);
+			Bridge(7, a);
+			Bridge(8, a);
+			Bridge(9, 0);
+			Bridge(10, 0);
 			anime.Setup();
 
+		}
+
+		void Ojigi(double time)
+		{
+			var hiji = new PartId(Part.Tekubi, Position.Left);
+			var kata = new PartId(Part.Hiji, Position.Left);
+			var kubi = new PartId(Part.Spine1, Position.Center);
+			var koshi = new PartId(Part.Spine2, Position.Center);
+			anime.SetAsZero(hiji, time, true);
+			anime.SetAsZero(kata, time, true);
+			anime.SetAsZero(kubi, time, false);
+			anime.SetAsZero(koshi, time, false);
+			var mid = time + 1;
+			var end = time + 3;
+			var length = 1;
+			anime.AddFrameWithMirror(new KeyFrameAnime.Frame(mid, kata, new RotationState(0, -MathHelper.PiOver2 / 2, 0)).ShiftTime(length));
+			anime.AddFrameWithMirror(new KeyFrameAnime.Frame(mid, hiji, new RotationState(-MathHelper.Pi * .15f, -MathHelper.PiOver2 * 1.2f, 0)).ShiftTime(length));
+			anime.AddFrame(new KeyFrameAnime.Frame(mid, kubi, new RotationState(0, -MathHelper.PiOver4 * .3f, 0)).ShiftTime(length));
+			anime.AddFrame(new KeyFrameAnime.Frame(mid, koshi, new RotationState(0, -MathHelper.Pi * .1f, 0)).ShiftTime(length));
+			anime.SetAsZero(hiji, end, true);
+			anime.SetAsZero(kata, end, true);
+			anime.SetAsZero(kubi, end, false);
+			anime.SetAsZero(koshi, end, false);
 		}
 
 		
@@ -118,7 +144,7 @@ namespace Masa.BridgeSim
 			leftArm.AddChild(
 				new Joint(Position.Left, Part.Hiji, 2, new Vector2(.3f, .3f), Vector3.Zero, new ValueWithRange(-MathHelper.PiOver2, MathHelper.PiOver2), new ValueWithRange(-MathHelper.Pi, MathHelper.PiOver2), new ValueWithRange(-MathHelper.PiOver2, MathHelper.Pi)) { Color = Color.Pink }//ひじ
 				.AddChild(
-					new Joint(Position.Left, Part.Tekubi, 2f, new Vector2(.3f, .3f), Vector3.Zero, new ValueWithRange(-MathHelper.PiOver2, MathHelper.PiOver2), new ValueWithRange(0, 0), new ValueWithRange(-MathHelper.PiOver4 * 3, 0)) { Color = Color.Peru }//手首
+					new Joint(Position.Left, Part.Tekubi, 2f, new Vector2(.3f, .3f), Vector3.Zero, new ValueWithRange(-MathHelper.PiOver2, MathHelper.PiOver2), new ValueWithRange(-MathHelper.PiOver4 * 3, 0), new ValueWithRange(-MathHelper.PiOver4 * 3, 0)) { Color = Color.Peru }//手首
 					.AddChild(
 						new Joint(Position.Left, Part.Tesaki, .7f, new Vector2(.5f, .3f), Vector3.Zero, new ValueWithRange(-MathHelper.PiOver2, MathHelper.PiOver2), new ValueWithRange(0, 0), new ValueWithRange(-MathHelper.PiOver2, MathHelper.PiOver2)) { Color = Color.Green }//手先
 					)
@@ -241,7 +267,7 @@ namespace Masa.BridgeSim
 			var box = Game.GetComponent<BoxRenderer>();
 			box.Begin();
 			root.Draw(box);
-			DrawGravityCenter();
+			//DrawGravityCenter();
 		}
 
 		Vector3 GetGravityCenter()
