@@ -94,15 +94,22 @@ namespace Masa.BridgeSim
 			//anime.AddFrameWithMirror(new KeyFrameAnime.Frame(5, pos, new RotationState(0, 0, -MathHelper.PiOver2)));
 			//anime.AddFrame(new KeyFrameAnime.Frame(6, new PartId(Part.Root, Position.Center), new RotationState(0, -MathHelper.PiOver2, 0)));
 			SetBodyLine();
-			var a = MathHelper.PiOver2 * 1.5f;
 			Ojigi(1);
-			Bridge(5, 0);
-			Bridge(7, a);
-			Bridge(8, a);
-			Bridge(9, 0);
-			Bridge(10, 0);
+			SetBridge(5);
 			anime.Setup();
 
+		}
+
+		void SetBridge(float time)
+		{
+			var a = MathHelper.PiOver2 * 1.5f;
+			
+			Bridge(time, 0);
+			Bridge(time + 2, a);
+			Bridge(time + 3, a);
+			Bridge(time + 4, 0);
+			Bridge(time + 5, 0);
+			
 		}
 
 		void Ojigi(double time)
