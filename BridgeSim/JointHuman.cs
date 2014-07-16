@@ -105,7 +105,7 @@ namespace Masa.BridgeSim
 			var a = MathHelper.PiOver2 * 1.5f;
 			
 			Bridge(time, 0);
-			Bridge(time + 2, a);
+			Bridge(time + 1, a);
 			Bridge(time + 3, a);
 			Bridge(time + 4, 0);
 			Bridge(time + 5, 0);
@@ -178,7 +178,7 @@ namespace Masa.BridgeSim
 				.AddChild(mata));
 				
 			root.AddChild(
-					new Joint(Position.Center, Part.Head, 1, new Vector2(.5f, .5f), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(0, MathHelper.TwoPi), new ValueWithRange(0)) { Color = Color.Purple });
+					new Joint(Position.Center, Part.Head, 1, new Vector2(.7f, .5f), Vector3.Zero, new ValueWithRange(0), new ValueWithRange(0, MathHelper.TwoPi), new ValueWithRange(0)) { Color = Color.Purple, TexutureIndex = 0 });
 		}
 
 		List<Joint[]> bodyLineList;

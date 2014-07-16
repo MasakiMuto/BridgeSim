@@ -15,6 +15,7 @@ namespace Masa.BridgeSim
 		IndexBuffer index;
 
 		RasterizerState wire;
+		Texture2D[] tex;
 
 		public BoxRenderer(Game game)
 			: base(game)
@@ -29,15 +30,15 @@ namespace Masa.BridgeSim
 			vertex = new VertexBuffer(GraphicsDevice, typeof(MyVertex), 8, BufferUsage.WriteOnly);
 			index = new IndexBuffer(GraphicsDevice, IndexElementSize.SixteenBits, 6 * 3 * 2, BufferUsage.WriteOnly);
 			vertex.SetData(new[]{
-				new Vector3(-1, -1, -1),
-				new Vector3(-1, -1, 1),
-				new Vector3(-1, 1, -1),
-				new Vector3(-1, 1, 1),
-				new Vector3(1, -1, -1),
-				new Vector3(1, -1, 1),
-				new Vector3(1, 1, -1),
-				new Vector3(1, 1, 1)
-			}.Select(x => new MyVertex(x, x))
+				new VertexPositionTexture(new Vector3(-1, -1, -1), new Vector2(0.25f, 0.25f)),
+				new VertexPositionTexture(new Vector3(-1, -1,  1), new Vector2(0, 0)),
+				new VertexPositionTexture(new Vector3(-1,  1, -1), new Vector2(0.25f, .75f)),
+				new VertexPositionTexture(new Vector3(-1,  1,  1), new Vector2(0, 1)),
+				new VertexPositionTexture(new Vector3( 1, -1, -1), new Vector2(.75f, .25f)),
+				new VertexPositionTexture(new Vector3( 1, -1,  1), new Vector2(1, 0)),
+				new VertexPositionTexture(new Vector3( 1,  1, -1), new Vector2(.75f, .75f)),
+				new VertexPositionTexture(new Vector3( 1,  1,  1), new Vector2(1, 1)), 
+			}.Select(x => new MyVertex(x.Position, x.Position, x.TextureCoordinate))
 			.ToArray()
 			);
 			index.SetData<short>(new short[]{
@@ -60,6 +61,7 @@ namespace Masa.BridgeSim
 				CullMode = CullMode.CullCounterClockwiseFace,
 				FillMode = FillMode.WireFrame
 			};
+			tex = new[]{"edge2.png", "edge3.png"}.Select(x=> Texture2D.FromStream(GraphicsDevice, System.IO.File.OpenRead(x))).ToArray();
 		}
 
 		public override void Update(GameTime gameTime)
@@ -81,8 +83,10 @@ namespace Masa.BridgeSim
 		
 		}
 
-		public void DrawBox(Color diffuse, Matrix world)
+		public void DrawBox(Color diffuse, Matrix world, int textureIndex = 1)
 		{
+			diffuse = Color.White;
+			GraphicsDevice.Textures[0] = tex[textureIndex];
 			effect.Parameters["Diffuse"].SetValue(diffuse.ToVector3());
 			effect.Parameters["World"].SetValue(world);
 			effect.CurrentTechnique.Passes[0].Apply();

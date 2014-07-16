@@ -79,6 +79,16 @@
   <ItemGroup>
     <None Include="effect.fx" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="EDGE2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="EDGE3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>D:\Library\StockEffects\CompileEffect\bin\Debug\CompileEffect.exe Windows Hidef $(ProjectDir)effect.fx $(TargetDir)effect.bin</PreBuildEvent>

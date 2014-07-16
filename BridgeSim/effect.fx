@@ -3,8 +3,9 @@ float4x4 View;
 float4x4 Projection;
 float3 Diffuse;
 float3 DiffuseDir;
+sampler tex0 : register(s0);
 
-void VS(inout float4 pos : POSITION0, inout float4 norm : NORMAL0, out float4 diffuse : COLOR0)
+void VS(inout float4 pos : POSITION0, inout float4 norm : NORMAL0, out float4 diffuse : COLOR0, inout float2 tc : TEXCOORD0)
 {
 	pos = mul(mul(mul(pos, World), View), Projection);
 	norm.w = 0;
@@ -13,9 +14,9 @@ void VS(inout float4 pos : POSITION0, inout float4 norm : NORMAL0, out float4 di
 	diffuse = float4(Diffuse.xyz * a, 1);
 }
 
-void PS(float4 pos : POSITION0, inout float4 diffuse : COLOR0)
+void PS(float4 pos : POSITION0, inout float4 diffuse : COLOR0, float2 tc : TEXCOORD0)
 {
-	
+	diffuse *= tex2D(tex0, tc);
 }
 
 technique tech1

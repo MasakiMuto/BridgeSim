@@ -59,6 +59,8 @@ namespace Masa.BridgeSim
 
 		public static Matrix GlobalInverse { get; set; }
 
+		public int TexutureIndex { get; set; }
+
 		static Joint()
 		{
 			GlobalInverse = Matrix.Identity;
@@ -67,6 +69,7 @@ namespace Masa.BridgeSim
 		public Joint(Position pos, Part name, float length, Vector2 size, Vector3 parentOffset, ValueWithRange yaw, ValueWithRange pitch, ValueWithRange roll)
 			: this()
 		{
+			TexutureIndex = 1;
 			Position = pos;
 			Name = name;
 			Length = length;
@@ -211,7 +214,7 @@ namespace Masa.BridgeSim
 			{
 				var scale = Matrix.CreateScale(Size.X * .5f, Length * .5f, Size.Y * .5f);
 
-				render.DrawBox(Color, scale * GetWorld() * GlobalInverse);
+				render.DrawBox(Color, scale * GetWorld() * GlobalInverse, TexutureIndex);
 			}
 
 			foreach (var item in Children)
